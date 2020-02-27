@@ -1,20 +1,31 @@
 package com.example.memoapp;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.nfc.Tag;
 import android.os.Bundle;
+import android.renderscript.Sampler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -27,11 +38,16 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     // DatabaseHelperクラス宣言
-    DatabaseHelper helper = null;
+    static DatabaseHelper helper = null;
     // SimpleAdapter宣言
-    SimpleAdapter adapter = null;
+    static SimpleAdapter adapter = null;
     // ArrayListの定義
-    final ArrayList<Map<String, String>> memoList = new ArrayList<>();
+    static final ArrayList<Map<String, String>> memoList = new ArrayList<>();
+    // SELECT文
+    static String sql = "SELECT * FROM memo_DB";
+    // classの宣言
+    DeleteDialogFragment dialogFragment;
+
     // 再描画用フラグ
     boolean flag = true;
 
@@ -72,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         // DB処理
         try {
             // rawQueryでデータを取得
-            Cursor c = db.rawQuery("SELECT * FROM memo_DB", null);
+            Cursor c = db.rawQuery(sql, null);
             // Cursorの先頭行があるかどうか確認、移動
             boolean next = c.moveToFirst();
 
@@ -82,12 +98,13 @@ public class MainActivity extends AppCompatActivity {
                 String uuidNum = c.getString(1);
                 String memoTxt = c.getString(2);
 
+                // リストに表示するのは10文字まで
                 if(uuidNum.length() >= 10){
-                    // リストに表示するのは10文字まで
                     uuidNum = uuidNum.substring(0, 11) + "...";
                 }
-
-//                memoTxt = memoTxt.substring(0, 11) + "..."; なぜこれはだめなのか
+                if (memoTxt.length() > 10){
+                    memoTxt = memoTxt.substring(0, 11) + "...";
+                }
 
                 // 値を設定
                 Map<String,String> data = new HashMap<>();
@@ -112,8 +129,8 @@ public class MainActivity extends AppCompatActivity {
         // ListView取得
         ListView lv = findViewById(R.id.lv);
         lv.setAdapter(adapter);
-
     }
+
 
     /**
      * MainActivityへ戻った際の処理
@@ -142,8 +159,6 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, MemoActivity.class);
             intent.putExtra("uuid", "");
 
-            Log.i(TAG, "do");
-
             // 第２画面を起動
             startActivity(intent);
 
@@ -161,8 +176,7 @@ public class MainActivity extends AppCompatActivity {
             //データベースを取得する
             SQLiteDatabase db = helper.getWritableDatabase();
 
-            // SELECT文をrawQuery()に
-            String sql = "SELECT *, rowid FROM memo_DB ORDER BY _id";
+            // rawQueryでデータを取得
             Cursor c = db.rawQuery(sql, null);
             c.moveToFirst();
 
@@ -194,37 +208,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     /**
      * リスト項目を長押しクリックした時削除する処理
      */
     public class ListItemLongClickListener implements AdapterView.OnItemLongClickListener{
+
         @Override
         public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            // FragmentManagerの取得
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            // FragmentClassの初期化
+            dialogFragment = new DeleteDialogFragment(MainActivity.this, adapter,memoList,position);
 
-            //データベースを取得する
-            SQLiteDatabase db = helper.getWritableDatabase();
-
-            try {
-            // SELECT句をrawQueryに
-             String sql = "SELECT * FROM memo_DB ORDER BY _id";
-             Cursor c = db.rawQuery(sql, null);
-             c.moveToFirst();
-
-             // プライマリーキーの取得
-             String getID = c.getString(c.getColumnIndex("_id"));
-             // delete()を使い該当の値を削除
-             db.delete("memo_DB", "_id = ?", new String[]{getID} );
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }finally {
-                db.close();
-            }
-
-            // 長押しした項目を画面から削除
-            memoList.remove(position);
-            adapter.notifyDataSetChanged();
+            // ダイアログを表示
+            dialogFragment.show(fragmentManager, "DeleteDialogFragment");
 
             // trueにすることで通常のクリックイベントを発生させない
             return true;
