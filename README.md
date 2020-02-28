@@ -5,9 +5,9 @@ MemoApp
 機能は　メモの新規作成、内容の保存、保存項目一覧の表示、項目の削除　となります<br>
 <br>
 ## スクリーンショット
-![home](https://user-images.githubusercontent.com/60495469/75501512-8de9a700-5a13-11ea-9c31-226548c660fb.png)
+![home](https://user-images.githubusercontent.com/60495469/75501753-3d267e00-5a14-11ea-96df-9bf37f0172d5.png)
 ![texitEdit](https://user-images.githubusercontent.com/60495469/75501563-b376b080-5a13-11ea-98a5-4e5eaea98782.png)
-![delete](https://user-images.githubusercontent.com/60495469/75501582-c25d6300-5a13-11ea-87b6-0c602c16e184.png)
+![delete](https://user-images.githubusercontent.com/60495469/75501771-4adc0380-5a14-11ea-81fa-767dbb1fa067.png)
 <br>
 ## 開発環境
 言語　java<br>
