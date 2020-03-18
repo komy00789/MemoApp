@@ -30,7 +30,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         sb.append("CREATE TABLE memo_DB (");
         sb.append("_id INTEGER PRIMARY KEY,");
         sb.append("uuid TEXT,");
-        sb.append("memo TEXT");
+        sb.append("memo TEXT,");
+        sb.append("date TEXT");
         sb.append(");");
 
         String sql = sb.toString();

@@ -6,6 +6,8 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -14,7 +16,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
 public class MemoActivity extends AppCompatActivity {
@@ -106,12 +113,16 @@ public class MemoActivity extends AppCompatActivity {
                         id = UUID.randomUUID().toString();
 
                         // INSERT文で値をDBに保存
-                        String sql = "INSERT INTO memo_DB (uuid, memo) VALUES (?,?)";
+                        String sql = "INSERT INTO memo_DB (uuid, memo,date) VALUES (?,?,?)";
                         SQLiteStatement stmt = db.compileStatement(sql);
                         stmt.bindString(1, id);
                         stmt.bindString(2,txtStr);
 
+                        String day = getNowDate();
+                        stmt.bindString(3, day);
+
                         stmt.executeInsert();
+                        Flag = false;
 
                     }else {
                         // 更新の場合
@@ -158,6 +169,17 @@ public class MemoActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.memo_actionbar, menu);
         return true;
+    }
+
+
+    /**
+     * 日付け取得用
+     * @return
+     */
+    public static String getNowDate(){
+        final DateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+        final Date date = new Date(System.currentTimeMillis());
+        return df.format(date);
     }
 
 }

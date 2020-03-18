@@ -14,7 +14,7 @@
         android:layout_weight="10"
         android:inputType="textMultiLine"
         android:gravity="top|left"
-        android:textSize="10dp" />
+        android:textSize="15dp" />
 
 </LinearLayout>
 

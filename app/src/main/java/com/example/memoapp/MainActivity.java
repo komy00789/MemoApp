@@ -1,37 +1,39 @@
 package com.example.memoapp;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.nfc.Tag;
 import android.os.Bundle;
-import android.renderscript.Sampler;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+
+/**
+ * nyanさんの。リサイクラービューについて
+ * https://akira-watson.com/android/recyclerview.html
+ * Qiita.同じくリサイクラービューについて
+ * https://qiita.com/naoi/items/f8a19d6278147e98bbc2
+ */
 
 public class MainActivity extends AppCompatActivity {
     //Logcat
@@ -95,20 +97,22 @@ public class MainActivity extends AppCompatActivity {
             // 取得した全ての行を設定
             while (next) {
                 // 取得したカラムの順番(0から始まる)と型を指定してデータを取得する
-                String uuidNum = c.getString(1);
+//                String uuidNum = c.getString(1);
                 String memoTxt = c.getString(2);
+                String dayTxt = c.getString(3);
 
                 // リストに表示するのは10文字まで
-                if(uuidNum.length() >= 10){
-                    uuidNum = uuidNum.substring(0, 11) + "...";
-                }
+//                if(uuidNum.length() >= 10){
+//                    uuidNum = uuidNum.substring(0, 11) + "...";
+//                }
                 if (memoTxt.length() > 10){
                     memoTxt = memoTxt.substring(0, 11) + "...";
                 }
 
                 // 値を設定
                 Map<String,String> data = new HashMap<>();
-                data.put("uuid",uuidNum);
+//                data.put("uuid",uuidNum);
+                data.put("date",dayTxt);
                 data.put("memo",memoTxt);
                 memoList.add(data);
 
@@ -121,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // SimpleAdapter生成
-        String[] from = {"memo","uuid"};
+        String[] from = {"memo","date"};
         int[] to = {android.R.id.text1, android.R.id.text2};
 
         adapter = new SimpleAdapter(this, memoList, android.R.layout.simple_list_item_2, from,to);
@@ -185,12 +189,14 @@ public class MainActivity extends AppCompatActivity {
             String getID = "";
             String uuID = "";
             String memoDb = "";
+            String dayDb = "";
 
             // 値を取得
             while (id+1 != count){
                 getID = c.getString(c.getColumnIndex("_id"));
                 uuID = c.getString(c.getColumnIndex("uuid"));
                 memoDb = c.getString(c.getColumnIndex("memo"));
+                dayDb = c.getString(c.getColumnIndex("date"));
                 count++;
                 c.moveToNext();
             }
