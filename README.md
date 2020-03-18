@@ -5,7 +5,7 @@ MemoApp
 機能は〈メモの新規作成、内容の保存、保存項目一覧の表示、項目の削除〉となります<br>
 <br>
 ## スクリーンショット
-![Uploading home(re).png…]()
+![home(re)](https://user-images.githubusercontent.com/60495469/76929755-50987b00-6928-11ea-98e5-455142dff3e8.png)
 ![texitEdit](https://user-images.githubusercontent.com/60495469/75501563-b376b080-5a13-11ea-98a5-4e5eaea98782.png)
 ![delete](https://user-images.githubusercontent.com/60495469/75501771-4adc0380-5a14-11ea-81fa-767dbb1fa067.png)
 <br>
